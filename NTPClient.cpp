@@ -167,28 +167,28 @@ int NTPClient::getSeconds() {
 
 // 2022-04-18 Mod by @PaulskPt
 // was: String NTPClient::getFormattedTime(unsigned long secs) {
-String NTPClient::getFormattedTime(unsigned long secs, boolean disp_gmt) {
+String NTPClient::getFormattedTime(unsigned long secs, boolean use_local_time) {
   unsigned long rawTime = secs ? secs : this->getEpochTime();
 
-  if (disp_gmt)
-  {
-      if (rawTime)
-      {
-        Serial.print("getFormttedTime() rawTime = ");
-        Serial.println(rawTime);
-        if (this->_timeOffset > 0)
-        {
-            Serial.print("getFormattedTime() correcting rawTime. Subtracting timeOffset: ");
-      Serial.println(this->_timeOffset);
-            rawTime -= this->_timeOffset;  // e.g.: Lisbon DST is UTC + 3600 (1 hr), so we have to subtract to get UTC
-        }
-        else if (this->_timeOffset < 0)
-            rawTime += this->_timeOffset;  // e.g.: Louisville, USA DTS is UTC - 4 hrs = - 4*3600 = 14400 secs, so we have to add 14400.
-        if (rawTime < 0)
-          rawTime = 0;
-      }
+  if (use_local_time) 
+    Serial.println("getFormattedTime(): we will use local time");
   else
-    Serial.print("getFormattedTime(): we will use local time");
+  { // We will use GMT
+    if (rawTime)
+    {
+      Serial.print("getFormttedTime() rawTime = ");
+      Serial.println(rawTime);
+      if (this->_timeOffset > 0)
+      {
+        Serial.print("getFormattedTime() correcting rawTime. Subtracting timeOffset: ");
+        Serial.println(this->_timeOffset);
+        rawTime -= this->_timeOffset;  // e.g.: Lisbon DST is UTC + 3600 (1 hr), so we have to subtract to get UTC
+      }
+      else if (this->_timeOffset < 0)
+        rawTime += this->_timeOffset;  // e.g.: Louisville, USA DTS is UTC - 4 hrs = - 4*3600 = 14400 secs, so we have to add 14400.
+      if (rawTime < 0)
+        rawTime = 0;
+    }
   }
   // end-of-mod
   unsigned long hours = (rawTime % 86400L) / 3600;
@@ -206,7 +206,7 @@ String NTPClient::getFormattedTime(unsigned long secs, boolean disp_gmt) {
 // Based on https://github.com/PaulStoffregen/Time/blob/master/Time.cpp
 // currently assumes UTC timezone, instead of using this->_timeOffset
 // was: String NTPClient::getFormattedDate(unsigned long secs) {
-String NTPClient::getFormattedDate(unsigned long secs, boolean disp_gmt) {
+String NTPClient::getFormattedDate(unsigned long secs, boolean use_local_time) {
   unsigned long rawTime = (secs ? secs : this->getEpochTime()) / 86400L;  // in days
   unsigned long days = 0, year = 1970;
   uint8_t month;
@@ -248,7 +248,7 @@ String NTPClient::getFormattedDate(unsigned long secs, boolean disp_gmt) {
       n = this->_timeOffset / 3600;  // convert timeOsset to hours
   String tz_ltr = this->tz_nato((String)n);
   // was: return String(year) + "-" + monthStr + "-" + dayStr + "T" + this->getFormattedTime(secs ? secs : 0) + "Z";
-  return String(year) + "-" + monthStr + "-" + dayStr + "T" + this->getFormattedTime(secs ? secs : 0, disp_gmt) + tz_ltr;
+  return String(year) + "-" + monthStr + "-" + dayStr + "T" + this->getFormattedTime(secs ? secs : 0, use_local_time) + tz_ltr;
   // end-of-mod
 }
 

@@ -416,11 +416,13 @@ void dt_handler(boolean lRefr)
     String dateStamp, dayStamp, monthStamp, yearStamp = "";
     String wd, yearStampSmall, timeStamp, hourStamp, minuteStamp, secondStamp = "";
     String hrs,mins,secs = "";
+    String tz_ltr = "?";
+    boolean use_local_time = ntp_local; // This is temporary. There should be a separate variable in secrets.h to indicate use of local time or GMT
 
     if (lRefr)  // Refresh (from NTP Server)
     {
       timeClient.update();
-      fDate = timeClient.getFormattedDate(0, ntp_local);
+      fDate = timeClient.getFormattedDate(0, use_local_time);
 
       int splitT = fDate.indexOf("T");
       
@@ -436,6 +438,7 @@ void dt_handler(boolean lRefr)
       secondStamp    = timeStamp.substring(6,8);
       weekDay        = timeClient.getDay();
       wd             = daysOfTheWeek[weekDay];
+      tz_ltr         = timeClient.tz_nato(String(NTP_OFFSET/3600));
 
       if (!my_debug)
       {
@@ -470,6 +473,7 @@ void dt_handler(boolean lRefr)
       day     = DateStruct.Date;
       weekDay = DateStruct.WeekDay;
       wd      = daysOfTheWeek[weekDay];
+      tz_ltr  = timeClient.tz_nato(String(NTP_OFFSET/3600));
       M5.Rtc.GetTime(&TimeStruct);  // Get the time of the built-in RTC
       
       hour    = TimeStruct.Hours;
@@ -556,6 +560,9 @@ void dt_handler(boolean lRefr)
       M5.Lcd.fillRect(hori[2], vert[3], M5.Lcd.width()-hori[2], height_time, BLACK); // wipe out the variable time text
       M5.Lcd.setCursor(hori[2], vert[3]);
       M5.Lcd.println(timeStampNoMilitary);
+      M5.Lcd.setCursor(hori[2], vert[4]);
+      M5.Lcd.println(tz_ltr);  
+      
       M5.Lcd.setTextSize(2);
       if(isPm)
       {
@@ -583,6 +590,8 @@ void dt_handler(boolean lRefr)
       M5.Lcd.fillRect(hori[2], vert[3], M5.Lcd.width()-hori[2], height_time, BLACK); // wipe out the variable time text
       M5.Lcd.setCursor(hori[2], vert[3]);
       M5.Lcd.println(timeStampNoMilitary);
+      M5.Lcd.setCursor(hori[2], vert[4]);
+      M5.Lcd.println(tz_ltr);
       M5.Lcd.println();   
       M5.Lcd.setTextSize(2);    
     }
