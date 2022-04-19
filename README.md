@@ -34,6 +34,7 @@ NTPClient timeClient(ntpUDP, NTP_ADDRESS, NTP_OFFSET, NTP_INTERVAL);
 
 Modifications in this fork:
 
+```
 a) moved date/time handling from ```loop()``` to dt_handler();
 b) added functionality to retrieve WiFi credentials and DEBUG_FLAG from CD card, file ```secrets.h```
 c) set/clear global flag ```my_debug``` from retrieved DEBUG_FLAG
@@ -44,3 +45,4 @@ g) in loop() added a elapsed time calculation.
 h) in loop() added a call to dt_handler() every 5 minutes with flag lRefresh true to force re-synchronization of the built-in RTC from a NTP server.
 i) in dt_handler() added functionality for a 24 hour clock instead of 12 hour with am/pm
 j) in dt_handler() added functionality to update only the most frequently changed data: the time. The date and day-of-the-week will only updated when necessary.
+```
