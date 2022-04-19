@@ -12,7 +12,7 @@ In NTPClient.cpp I modified the functions: ```getFormattedTime()``` and ```getFo
 The function getFormattedDate can now be called with a 2nd parameter ```disp_gmt```. This parameter defaults to ```true```.
 Example: getFormattedDate(0, false);
 In that case the function will return the formattedDate with as last character the NATO time-zone letter. 
-Example: "2022-04-19T00:01:46A" (for the time-zone UTC + 1 hour (= UTC + 3600 seconds)
+Example: "2022-04-19T00:01:46A" (for the time-zone UTC + 1 hour) (= UTC + 3600 seconds)
 
 whereas in the calling .ino sketch the NTPClient was defined as follows:
 ```
