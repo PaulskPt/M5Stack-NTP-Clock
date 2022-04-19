@@ -28,7 +28,7 @@ In the ```M5Stack-NTP-Clock-master.ino``` sketch file:
 
 Moved the date and time handling from loop() to a new function ```dt_handler(boolean lRefr)```.
 Added 24 hour clock functionality.
-Added functionality to only update that part of the display that refreshes the most: the time.
+Added functionality to, conditionally, only update that part of the display that refreshes the most: the time.
 In loop() added an elapsed time calculation. 
 Added functionality to synchronize the built-in RTC with an NTP server every 5 minutes.
 Added use of the three buttons of which, in this moment, only BtnA and BtnC are being used.
