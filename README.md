@@ -7,6 +7,7 @@ It has the ability to show am and pm, as well as do military time or non militar
 You need this library tho so get installing: https://github.com/taranais/NTPClient
 
 Notes by @PaulskPt:
+
 To NTPClient.cpp I added a function ```tz_nato()```. 
 In NTPClient.cpp I modified the functions: ```getFormattedTime()``` and ```getFormattedDate()```.
 The function getFormattedDate can now be called with a 2nd parameter ```disp_gmt```. This parameter defaults to ```true```.
