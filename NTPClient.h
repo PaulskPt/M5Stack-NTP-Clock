@@ -9,19 +9,9 @@
 #define NTP_DEFAULT_LOCAL_PORT 1337
 #define LEAP_YEAR(Y)     ( (Y>0) && !(Y%4) && ( (Y%100) || !(Y%400) ) )
 
-/*
-char * TZ_Ltrs_NATO = { "-12":"Y", "-11":"X", "-10":"W", "-9":"V",  "-8":"U", 
-                        "-7":"T",  "-6":"S",  "-5":"R",  "-4":"Q",  "-3":"P", 
-						"-2":"O",  "-1":"N",  "0":"Z",   "+1":"A",  "+2":"B", 
-						"+3":"C",  "+4":"D",  "+5":"E",  "+6":"F",  "+7":"G",
-					    "+8":"H",  "+9":"I",  "+10":"K", "+11":"L", "+12":"M"}  // 25 Time Zones
-*/						
-	struct tz_nato {
-		String tz_hr;
-        String tz_ltr;
-	};
-
-
+const byte numChars = 2;
+const char tz_west[13][numChars] = {"?", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y"};
+const char tz_east[13][numChars] = {"?", "A", "B", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M"};
 
 class NTPClient {
   private:
@@ -58,6 +48,13 @@ class NTPClient {
      * Starts the underlying UDP client with the specified local port
      */
     void begin(int port);
+    
+
+    /**
+     * Added by @PaulskPt on 2022-04-19, 19h55 PT
+     * Function to alter the url of the NPT server(pool)
+     */
+    void chg_url(const char* newPoolServerName);
 
     /**
      * This should be called in the main loop of your application. By default an update from the NTP Server is only

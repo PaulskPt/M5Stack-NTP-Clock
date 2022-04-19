@@ -58,7 +58,20 @@ void NTPClient::begin(int port) {
   this->_udp->begin(this->_port);
 
   this->_udpSetup = true;
+ 
 }
+
+void NTPClient::chg_url(const char* newPoolServerName)
+{
+  uint8_t le = sizeof(newPoolServerName)/sizeof(newPoolServerName[0]);
+  if (le > 0)
+  {
+    this->_poolServerName = newPoolServerName;
+    Serial.print("this->_poolServerName set to: ");
+    Serial.println(this->_poolServerName);
+  }
+}
+
 
 bool NTPClient::isValid(byte * ntpPacket)
 {
@@ -165,7 +178,8 @@ String NTPClient::getFormattedTime(unsigned long secs, boolean disp_gmt) {
 		Serial.println(rawTime);
 		if (this->_timeOffset > 0)
 		{
-			Serial.println("getFormattedDate() correcting rawTime. Subtracting timeOffset");
+			Serial.print("getFormattedTime() correcting rawTime. Subtracting timeOffset: ");
+      Serial.println(this->_timeOffset);
 			rawTime -= this->_timeOffset;  // e.g.: Lisbon DST is UTC + 3600 (1 hr), so we have to subtract to get UTC
 		}
 		else if (this->_timeOffset < 0)
@@ -173,6 +187,8 @@ String NTPClient::getFormattedTime(unsigned long secs, boolean disp_gmt) {
 		if (rawTime < 0)
 		  rawTime = 0;
 	  }
+  else
+    Serial.print("getFormattedTime(): we will use local time");
   }
   // end-of-mod
   unsigned long hours = (rawTime % 86400L) / 3600;
@@ -229,7 +245,7 @@ String NTPClient::getFormattedDate(unsigned long secs, boolean disp_gmt) {
   }
   int n = 0;
   if (this->_timeOffset != 0)
-	n = this->_timeOffset / 3600;
+	  n = this->_timeOffset / 3600;  // convert timeOsset to hours
   String tz_ltr = this->tz_nato((String)n);
   // was: return String(year) + "-" + monthStr + "-" + dayStr + "T" + this->getFormattedTime(secs ? secs : 0) + "Z";
   return String(year) + "-" + monthStr + "-" + dayStr + "T" + this->getFormattedTime(secs ? secs : 0, disp_gmt) + tz_ltr;
@@ -295,72 +311,19 @@ String NTPClient::tz_nato(String tz){
 		{   // Westerly timezones
 			n = abs(n);
 			if (n > 12)
-			  return "?";
-			if (n == 1)
-			  return "N";
-			else if (n == 2)
-			  return "O";	  
-			else if (n == 3)
-			  return "P";		  
-			else if (n == 4)
-			  return "Q";		  
-			else if (n == 4)
-			  return "Q";		  
-			else if (n == 5)
-			  return "R";		  
-			else if (n == 6)
-			  return "S";		  
-			else if (n == 7)
-			  return "T";
-			else if (n == 8)
-			  return "U";
-			else if (n == 9)
-			  return "V";
-			else if (n == 10)
-			  return "W";
-			else if (n == 11)
-			  return "X";
-			else if (n == 12)
-			  return "Y";
-			else
-			  return "?";
+			  n = 0;
+      return tz_west[n];
 		} 
 		else if (n > 0)
 		{	// Easterly timezones
 		  
 			if (n > 12)
-			  return "?";
-			if (n == 1)
-			  return "A";
-			else if (n == 2)
-			  return "B";
-			else if (n == 3)
-			  return "C";
-			else if (n == 4)
-			  return "D";
-			else if (n == 5)
-			  return "E";
-			else if (n == 6)
-			  return "F";
-			else if (n == 7)
-			  return "G";
-			else if (n == 8)
-			  return "H";
-			else if (n == 9)
-			  return "I";
-			else if (n == 10)
-			  return "K";
-			else if (n == 11)
-			  return "L";
-			else if (n == 12)
-			  return "M";
-			else
-			  return "?";
+        n = 0;
+      return tz_east[n];
 		}
-
 		else
-			return "?";
+			return tz_west[0];
 	}
 	else
-		return "?";
+		return tz_west[0];
 }

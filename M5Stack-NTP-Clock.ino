@@ -43,17 +43,22 @@ FILE myFile;
 
 #ifdef USE_PSK_SECRETS
 ///////please enter your sensitive data in the Secret tab/arduino_secrets.h
-char ssid[]         = SECRET_SSID;    // Network SSID (name)
-char password[]     = SECRET_PASS;    // Network password (use for WPA, or use as key for WEP)
-char debug_flag[]   = DEBUG_FLAG;     // General debug print flag
+char ssid[]           = SECRET_SSID;     // Network SSID (name)
+char password[]       = SECRET_PASS;     // Network password (use for WPA, or use as key for WEP)
+char debug_flag[]     = DEBUG_FLAG;      // General debug print flag
+char ntp_local_flag[] = NTP_LOCAL_FLAG;  // Defines to use local NTP server or world pool server
+char ntp_local_url[]  = NTP_LOCAL_URL;    // URL of local NTP server pool
 #else
-char ssid[] = "SSID";         // your network SSID (name)
-char password[] = "password"; // your network password
-char debug_flag[] = "0";
+char ssid[]           = "SSID";         // your network SSID (name)
+char password[]       = "password"; // your network password
+char debug_flag[]     = "0";
+char ntp_local_flag[] = "0";
+char ntp_local_url[]  = "pt.pool.ntp.org";
 #endif
 
-
-
+boolean ntp_local = false; // default use worldwide ntp pool
+char ntp_url[]= "";
+//char* ntp_url = "";
 /*
  * See: C:\Users\<User>\Documenten\Arduino\arduino-esp32-master\tools\sdk\esp32\include\driver\include\driver\ledc.h
  * @brief LEDC channel configuration
@@ -80,8 +85,9 @@ boolean lRefresh = false;
 
 #define NTP_OFFSET  +3600              // for Europe/Lisbon       was: -28798 // In seconds for los angeles/san francisco time zone
 #define NTP_INTERVAL 60 * 1000         // In miliseconds
-#define NTP_ADDRESS  "pt.pool.ntp.org" // was: "pool.ntp.org"
+#define NTP_ADDRESS  "pool.ntp.org"
 
+char* ntp_global_url = "pool.ntp.org";
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, NTP_ADDRESS, NTP_OFFSET, NTP_INTERVAL);
 
@@ -128,17 +134,49 @@ void setup(void)
   {
      // Read WiFi credentials from SD Card
      if (rdSecrets(SD,"/secrets.h"))
-       Serial.print(F("All needed values read from file \""));
-     Serial.print("/secrets.h");
-     Serial.println("\" successfully");
+     {
+       Serial.print(F("All needed values successfully read from file \""));
+       Serial.print("/secrets.h");
+       Serial.println("\"");
+     }
+     else
+     {
+       Serial.print("None or some values read from file \"");
+       Serial.println("/secrets.h");
+     }
+     Serial.print("Value of ntp_local flag = ");
+     Serial.println(ntp_local == 1 ? "true" : "false");
      Serial.print("Value of my_debug flag = ");
      Serial.println(my_debug == 1 ? "true" : "false");
   }
+
   
-  if (my_debug)
+  if (ntp_local)
+  {
+    int le = sizeof(ntp_local_url)/sizeof(ntp_local_url[0]);
+    for (uint8_t i = 0; i < le; i++)
+    {
+      ntp_url[i] = ntp_local_url[i];
+    }
+  }
+  else
+  {
+    int le = sizeof(ntp_global_url)/sizeof(ntp_global_url[0]);
+    for (uint8_t i = 0; i < le; i++)
+    {
+      ntp_url[i] = ntp_global_url[i];
+    }
+  }
+  
+  Serial.print("for NTPClient we will use url: ");
+  Serial.println(ntp_url);
+
+  timeClient.chg_url(ntp_url);  // Adjust the NTP pool URL
+  
+  if (!my_debug)
   {
     Serial.print("Using NTP Pool server: \'");
-    Serial.print(NTP_ADDRESS);
+    Serial.print(ntp_url[0]);
     Serial.println("\'");
     Serial.print("NTP timezone offset from GMT: ");
     if (NTP_OFFSET > 0)
@@ -220,8 +258,9 @@ boolean rdSecrets(fs::FS &fs, const char * path)
   int fnd = 0;
   boolean lFnd, txt_shown = false;
 
-  String item_lst[3] = {"SECRET_SSID", "SECRET_PASS", "DEBUG_FLAG"};
- 
+  const char item_lst[][15] = {"SECRET_SSID", "SECRET_PASS", "DEBUG_FLAG", "NTP_LOCAL_FLAG", "NTP_LOCAL_URL"};
+  le = sizeof(item_lst)/sizeof(item_lst[0]);
+  
   Serial.printf("%s\n", s);
   File file = fs.open(path);
   if (!file) {
@@ -234,7 +273,9 @@ boolean rdSecrets(fs::FS &fs, const char * path)
   {
     try 
     {
-      for (uint8_t i = 0; i < 3; i++)
+      Serial.print("rdSecrets(): nr of items to retrieve: ");
+      Serial.println(le);
+      for (uint8_t i = 0; i < le; i++)
       {
         sSrch = item_lst[i];
         if (file.available())
@@ -272,12 +313,28 @@ boolean rdSecrets(fs::FS &fs, const char * path)
                 {
                   s2.toCharArray(debug_flag,s2.length()-1);
                   Serial.print("extracted debug_flag: ");
-                  Serial.println(debug_flag);
-                  if (debug_flag == "1")
+                  Serial.println(debug_flag[0]);
+                  if (debug_flag[0])
                     my_debug = true;
                   else
                     my_debug = false;
                 }
+                else if (i == 3)
+                {
+                  s2.toCharArray(ntp_local_flag,s2.length()-1);
+                  Serial.print("extracted ntp_local_flag: ");
+                  Serial.println(ntp_local_flag[0]);
+                  if (ntp_local_flag[0])
+                    ntp_local = true;
+                  else
+                    ntp_local = false;
+                }
+                else if (i == 4)
+                {
+                  s2.toCharArray(ntp_local_url,s2.length()-1);
+                  Serial.print("extracted ntp_local_url: ");
+                  Serial.println(ntp_local_url);
+                }  
                 break; // break out of while loop
               }
             }
@@ -285,7 +342,7 @@ boolean rdSecrets(fs::FS &fs, const char * path)
         }
         else
         {
-          throw 237;  // indicate linenr where file.available revealed a false
+          throw 241;  // indicate linenr where file.available revealed a false
         }
       }
     }
@@ -297,8 +354,8 @@ boolean rdSecrets(fs::FS &fs, const char * path)
   }
   file.close();
 
-  if (fnd == 3)
-    return true;  // Indicate all 3 items were found and handled
+  if (fnd == le)
+    return true;  // Indicate all items were found and handled
   return false;
 }
 
@@ -363,7 +420,7 @@ void dt_handler(boolean lRefr)
     if (lRefr)  // Refresh (from NTP Server)
     {
       timeClient.update();
-      fDate = timeClient.getFormattedDate(0, false);
+      fDate = timeClient.getFormattedDate(0, ntp_local);
 
       int splitT = fDate.indexOf("T");
       
