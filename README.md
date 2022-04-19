@@ -26,6 +26,15 @@ NTPClient timeClient(ntpUDP, NTP_ADDRESS, NTP_OFFSET, NTP_INTERVAL);
 ```
 In the ```M5Stack-NTP-Clock-master.ino``` sketch file:
 
+Moved the date and time handling from loop() to a new function ```dt_handler(boolean lRefr)```.
+Added flag ```use_12hr``` to add 24 hour clock functionality.
+Added functionality to only update that part of the display that refreshes the most: the time.
+In loop() added an elapsed time calculation. 
+Added functionality to synchronize the built-in RTC with an NTP server every 5 minutes.
+Added use of the three buttons of which, in this moment, only BtnA and BtnC are being used.
+BtnA to force a re-synchronizing of the built-in RTC from an NTP-server on the internet.
+BtnC to Exit the clock.
+
 Added functionality to read WiFi credentials from file ```secrets.h``` on SD card.
 Aded function ```rdDbgFlag()```to read ```DEBUG_FLAG``` from same file on SD card. This sets or clears the ```my_debug``` flag in the sketch. This flag is used to print/not print output to Monitor window of the Arduino IDE (or the M5Stack display).
 
