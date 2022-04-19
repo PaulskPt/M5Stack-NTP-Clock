@@ -23,3 +23,5 @@ whereas in the calling .ino sketch the NTPClient was defined as follows:
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, NTP_ADDRESS, NTP_OFFSET, NTP_INTERVAL);
 ```
+Also added functionality to read WiFi credentials from file ```secrets.h``` on SD card.
+Aded function to read ```DEBUG_FLAG``` from same file on SD card.
