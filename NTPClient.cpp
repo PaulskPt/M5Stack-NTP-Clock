@@ -75,26 +75,26 @@ void NTPClient::chg_url(const char* newPoolServerName)
 
 bool NTPClient::isValid(byte * ntpPacket)
 {
-	//Perform a few validity checks on the packet
-	if((ntpPacket[0] & 0b11000000) == 0b11000000)		//Check for LI=UNSYNC
-		return false;
-		
-	if((ntpPacket[0] & 0b00111000) >> 3 < 0b100)		//Check for Version >= 4
-		return false;
-		
-	if((ntpPacket[0] & 0b00000111) != 0b100)			//Check for Mode == Server
-		return false;
-		
-	if((ntpPacket[1] < 1) || (ntpPacket[1] > 15))		//Check for valid Stratum
-		return false;
+    //Perform a few validity checks on the packet
+    if((ntpPacket[0] & 0b11000000) == 0b11000000)        //Check for LI=UNSYNC
+        return false;
+        
+    if((ntpPacket[0] & 0b00111000) >> 3 < 0b100)        //Check for Version >= 4
+        return false;
+        
+    if((ntpPacket[0] & 0b00000111) != 0b100)            //Check for Mode == Server
+        return false;
+        
+    if((ntpPacket[1] < 1) || (ntpPacket[1] > 15))        //Check for valid Stratum
+        return false;
 
-	if(	ntpPacket[16] == 0 && ntpPacket[17] == 0 && 
-		ntpPacket[18] == 0 && ntpPacket[19] == 0 &&
-		ntpPacket[20] == 0 && ntpPacket[21] == 0 &&
-		ntpPacket[22] == 0 && ntpPacket[22] == 0)		//Check for ReferenceTimestamp != 0
-		return false;
+    if(    ntpPacket[16] == 0 && ntpPacket[17] == 0 && 
+        ntpPacket[18] == 0 && ntpPacket[19] == 0 &&
+        ntpPacket[20] == 0 && ntpPacket[21] == 0 &&
+        ntpPacket[22] == 0 && ntpPacket[22] == 0)        //Check for ReferenceTimestamp != 0
+        return false;
 
-	return true;
+    return true;
 }
 
 bool NTPClient::forceUpdate() {
@@ -172,21 +172,21 @@ String NTPClient::getFormattedTime(unsigned long secs, boolean disp_gmt) {
 
   if (disp_gmt)
   {
-	  if (rawTime)
-	  {
-		Serial.print("getFormttedTime() rawTime = ");
-		Serial.println(rawTime);
-		if (this->_timeOffset > 0)
-		{
-			Serial.print("getFormattedTime() correcting rawTime. Subtracting timeOffset: ");
+      if (rawTime)
+      {
+        Serial.print("getFormttedTime() rawTime = ");
+        Serial.println(rawTime);
+        if (this->_timeOffset > 0)
+        {
+            Serial.print("getFormattedTime() correcting rawTime. Subtracting timeOffset: ");
       Serial.println(this->_timeOffset);
-			rawTime -= this->_timeOffset;  // e.g.: Lisbon DST is UTC + 3600 (1 hr), so we have to subtract to get UTC
-		}
-		else if (this->_timeOffset < 0)
-			rawTime += this->_timeOffset;  // e.g.: Louisville, USA DTS is UTC - 4 hrs = - 4*3600 = 14400 secs, so we have to add 14400.
-		if (rawTime < 0)
-		  rawTime = 0;
-	  }
+            rawTime -= this->_timeOffset;  // e.g.: Lisbon DST is UTC + 3600 (1 hr), so we have to subtract to get UTC
+        }
+        else if (this->_timeOffset < 0)
+            rawTime += this->_timeOffset;  // e.g.: Louisville, USA DTS is UTC - 4 hrs = - 4*3600 = 14400 secs, so we have to add 14400.
+        if (rawTime < 0)
+          rawTime = 0;
+      }
   else
     Serial.print("getFormattedTime(): we will use local time");
   }
@@ -231,21 +231,21 @@ String NTPClient::getFormattedDate(unsigned long secs, boolean disp_gmt) {
   // 2022-04-18 Mod by @PaulskPt
   if (secs)
   {
-	Serial.print("secs = ");
-	Serial.println(secs);
-	if (this->_timeOffset > 0)
-	{
-		Serial.println("getFormattedDate() correcting rawTime. Subtracting timeOffset");
-		secs -= this->_timeOffset;  // e.g.: Lisbon DST is UTC + 3600 (1 hr), so we have to subtract to get UTC
-	}
-	else if (this->_timeOffset < 0)
-		secs += this->_timeOffset;  // e.g.: Louisville, USA DTS is UTC - 4 hrs = - 4*3600 = 14400 secs, so we have to add 14400.
-	if (secs < 0)
-	  secs = 0;
+    Serial.print("secs = ");
+    Serial.println(secs);
+    if (this->_timeOffset > 0)
+    {
+        Serial.println("getFormattedDate() correcting rawTime. Subtracting timeOffset");
+        secs -= this->_timeOffset;  // e.g.: Lisbon DST is UTC + 3600 (1 hr), so we have to subtract to get UTC
+    }
+    else if (this->_timeOffset < 0)
+        secs += this->_timeOffset;  // e.g.: Louisville, USA DTS is UTC - 4 hrs = - 4*3600 = 14400 secs, so we have to add 14400.
+    if (secs < 0)
+      secs = 0;
   }
   int n = 0;
   if (this->_timeOffset != 0)
-	  n = this->_timeOffset / 3600;  // convert timeOsset to hours
+      n = this->_timeOffset / 3600;  // convert timeOsset to hours
   String tz_ltr = this->tz_nato((String)n);
   // was: return String(year) + "-" + monthStr + "-" + dayStr + "T" + this->getFormattedTime(secs ? secs : 0) + "Z";
   return String(year) + "-" + monthStr + "-" + dayStr + "T" + this->getFormattedTime(secs ? secs : 0, disp_gmt) + tz_ltr;
@@ -298,32 +298,32 @@ void NTPClient::setEpochTime(unsigned long secs) {
 * Return String: NATO timezone letter
 */
 String NTPClient::tz_nato(String tz){
-	int le = tz.length();
-	if (le > 3)
-		return "?";
+    int le = tz.length();
+    if (le > 3)
+        return "?";
 
-	if (le == 1 || le == 2 || le == 3)
-	{
-		int n = tz.toInt();
-		if (n == 0)
-			return "Z";
-		else if (n < 0)
-		{   // Westerly timezones
-			n = abs(n);
-			if (n > 12)
-			  n = 0;
+    if (le == 1 || le == 2 || le == 3)
+    {
+        int n = tz.toInt();
+        if (n == 0)
+            return "Z";
+        else if (n < 0)
+        {   // Westerly timezones
+            n = abs(n);
+            if (n > 12)
+      n = 0;
       return tz_west[n];
-		} 
-		else if (n > 0)
-		{	// Easterly timezones
-		  
-			if (n > 12)
+    } 
+    else if (n > 0)
+    {  // Easterly timezones
+          
+            if (n > 12)
         n = 0;
       return tz_east[n];
-		}
-		else
-			return tz_west[0];
-	}
-	else
-		return tz_west[0];
+        }
+        else
+            return tz_west[0];
+    }
+    else
+        return tz_west[0];
 }
