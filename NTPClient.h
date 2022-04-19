@@ -91,7 +91,7 @@ class NTPClient {
     * @return secs argument (or 0 for current time) formatted like `hh:mm:ss`
     */
     // was: String getFormattedTime(unsigned long secs = 0);
-	String getFormattedTime(unsigned long secs = 0, boolean disp_gmt = true);
+	String getFormattedTime(unsigned long secs = 0, boolean use_local_time = false);
 
     /**
      * @return time in seconds since Jan. 1, 1970
@@ -103,7 +103,7 @@ class NTPClient {
     * like `2004-02-12T15:19:21+00:00`
     */
     // was: String getFormattedDate(unsigned long secs = 0);
-	String getFormattedDate(unsigned long secs = 0, boolean disp_gmt = true);
+	String getFormattedDate(unsigned long secs = 0, boolean use_local_time = false);
 
     /**
      * Stops the underlying UDP client

@@ -423,6 +423,9 @@ void dt_handler(boolean lRefr)
     {
       timeClient.update();
       fDate = timeClient.getFormattedDate(0, use_local_time);
+      Serial.print("DateTime sync from NTP server: ");
+      Serial.println(fDate);
+      Serial.println();
 
       int splitT = fDate.indexOf("T");
       
