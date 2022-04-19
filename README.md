@@ -46,7 +46,8 @@ h) in loop() added a call to dt_handler() every 5 minutes with flag lRefresh tru
 i) in dt_handler() added functionality for a 24 hour clock instead of 12 hour with am/pm
 j) in dt_handler() added functionality to display the day-of-the-week (using the added global char array daysOfTheWeek[7][12])
 k) added function disp_msg() to display informative/warning or error messages
-l) added a function disp_frame() which builds the static texts on the display
-m) in dt_handler() added functionality to update only the most frequently changed data: the time. The date and day-of-the-week will only updated when necessary.
-The measures in l) and m) make the appearance of the display more 'quiet'.
+l) added the blinking of the power led to indicate when date and/or time is read and displayed
+m) added a function disp_frame() which builds the static texts on the display
+n) in dt_handler() added functionality to update only the most frequently changed data: the time. The date and day-of-the-week will only updated when necessary.
+The measures in m) and n) make the appearance of the display more 'quiet'.
 ```

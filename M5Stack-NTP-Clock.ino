@@ -1,25 +1,31 @@
 /*
- * Downloaded from: https://github.com/joeybab3/M5Stack-NTP-Clock by @PaulskPt
+ * Forked from: https://github.com/joeybab3/M5Stack-NTP-Clock by @PaulskPt
  * The README.md says: You need this library tho so get installing: https://github.com/taranais/NTPClient
  * I already had an NTPClient library installed. I had to delete that one because it did not have the function: getFormattedDate()
- * Added boolean variable use_24h
- * Added date and time prints to the monitor window.
- * Changed algorithm to use 24 hour clock notation instead of 12 hour notation with AM/PM
- * Changed also to a Portuguese NTP Pool server and an offset of +3600 seconds (1 hour) to GMT instead of offset for los angeles/san francisco time zone
- * After all this the sketch built OK and flashed OK to the m5stack FIRE
- * When connected the m5stack FIRE got the IP address 192.168.1.113 (esp32-43A044)
- * For the M5Stack Core2 this sketch was build using the Arduino IDE for MS Windows v1.8.19
- * I had to modify varios commands. Also the use of the three buttons; the blinking of the power led to indicate when date and/or time is read and displayed/printed to Monitor window.
- */
+ * Modifications in this fork:
+ * a) moved date/time handling from loop() to dt_handler();
+ * b) added functionality to retrieve WiFi credentials and DEBUG_FLAG from CD card, file: '/secrets.h'
+ * c) set/clear global flag my_debug from retrieved DEBUG_FLAG
+ * d) added functionality for button presses of BtnA, BtnB and BtnC. In this moment only BtnA and BtnC are in use.
+ * e) added function to update date/time of built-in RTC from NTP server on internet. 
+ * f) added functionality to use BtnA to force re-synchronization of the built-in RTC from a NTP server.
+ * g) in loop() added a elapsed time calculation.
+ * h) in loop() added a call to dt_handler() every 5 minutes with flag lRefresh true to force re-synchronization of the built-in RTC from a NTP server.
+ * i) in dt_handler() added functionality for a 24 hour clock instead of 12 hour with am/pm
+ * j) in dt_handler() added functionality to display the day-of-the-week (using the added global char array daysOfTheWeek[7][12])
+ * k) added function disp_msg() to display informative/warning or error messages
+ * l) added the blinking of the power led to indicate when date and/or time is read and displayed
+ * m) added a function disp_frame() which builds the static texts on the display
+ * n) in dt_handler() added functionality to update only the most frequently changed data: the time. The date and day-of-the-week will only updated when necessary.
+ * The measures in m) and n) make the appearance of the display more 'quiet'.
+*/
 #include <Arduino.h>
 #include <WiFi.h>
 #include <SPI.h>
 #include <SD.h>
 #include <NTPClient.h>
 #include <WiFiUdp.h>
-//include <M5Stack.h>
 #include <M5Core2.h>
-//#include "AXP192.h"
 
 boolean my_debug = NULL;
 
@@ -46,9 +52,8 @@ char debug_flag[] = "0";
 
 
 
-/**
- * See: C:\Users\pauls2\Documenten\Arduino\arduino-esp32-master\tools\sdk\esp32s2\include\driver\include\driver\ledc.h
- * See: C:\Users\pauls2\Documenten\Arduino\arduino-esp32-master\tools\sdk\esp32\include\driver\include\driver\ledc.h
+/*
+ * See: C:\Users\<User>\Documenten\Arduino\arduino-esp32-master\tools\sdk\esp32\include\driver\include\driver\ledc.h
  * @brief LEDC channel configuration
  *        Configure LEDC channel with the given channel/output gpio_num/interrupt/source timer/frequency(Hz)/LEDC duty resolution
  *
@@ -59,9 +64,8 @@ char debug_flag[] = "0";
  *     - ESP_ERR_INVALID_ARG Parameter error
  */
 //esp_err_t ledc_channel_config(const ledc_channel_config_t* ledc_conf);
-#define LEDC AXP_IO1
 
-//AXP192 axp; // M5Stack Core2 Power module class
+#define LEDC AXP_IO1
 
 char daysOfTheWeek[7][12] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
 String fDate;
@@ -350,7 +354,6 @@ void dt_handler(boolean lRefr)
     int height_date = vert[3]-vert[1];
     int height_time = vert[4]-vert[3];
     String TAG = "dt_handler(): ";
-    //String formattedTime = "";
     String dateStamp, dayStamp, monthStamp, yearStamp = "";
     String wd, yearStampSmall, timeStamp, hourStamp, minuteStamp, secondStamp = "";
     String hrs,mins,secs = "";
@@ -466,7 +469,6 @@ void dt_handler(boolean lRefr)
     int monthsLeft = 0;
   
     String timeStampNoMilitary = hourStampNoMilitary + ":" + minuteStamp + ":" + secondStamp;    // hh:mm:ss
-    //String dateStampConstructed = monthStamp + "/" + dayStamp + "/" + yearStampSmall;          // mm/dd/yy
     String dateStampConstructed = yearStampSmall + "-" + monthStamp + "-" + dayStamp;            // yy-mo-dd
 
     if (my_debug)
@@ -593,7 +595,7 @@ void loop()
         if (btnC_state)
           btnC_state = false;  
           
-        M5.Lcd.clear();  //fillScreen(BLACK);
+        M5.Lcd.clear();
         M5.Lcd.setCursor(0,0);
         date_old = ""; // trick to force re-displaying of: a) day-of-the-week; b) yy-mo-dd (the time is alway displayed!)
         disp_frame();
@@ -615,7 +617,7 @@ void loop()
         dt_handler(false);
     }
   }
-  // Eternal loop
+  // Infinite loop
   while(true){
     delay(3000);
   }
