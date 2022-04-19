@@ -23,5 +23,7 @@ whereas in the calling .ino sketch the NTPClient was defined as follows:
 WiFiUDP ntpUDP;
 NTPClient timeClient(ntpUDP, NTP_ADDRESS, NTP_OFFSET, NTP_INTERVAL);
 ```
-Also added functionality to read WiFi credentials from file ```secrets.h``` on SD card.
-Aded function to read ```DEBUG_FLAG``` from same file on SD card.
+In the ```M5Stack-NTP-Clock-master.ino sketch file:
+Added functionality to read WiFi credentials from file ```secrets.h``` on SD card.
+Aded function ```rdDbgFlag()```to read ```DEBUG_FLAG``` from same file on SD card. This sets or clears the ```my_debug``` flag in the sketch. This flag is used to print/not print output to Monitor window of the Arduino IDE (or the M5Stack display).
+
