@@ -44,7 +44,8 @@ f) added functionality to use BtnA to force re-synchronization of the built-in R
 g) in loop() added a elapsed time calculation.
 h) in loop() added a call to dt_handler() every 5 minutes with flag lRefresh true to force re-synchronization of the built-in RTC from a NTP server.
 i) in dt_handler() added functionality for a 24 hour clock instead of 12 hour with am/pm
-j) added a function disp_frame() which builds the static texts on the display
-k) in dt_handler() added functionality to update only the most frequently changed data: the time. The date and day-of-the-week will only updated when necessary.
-The measures in j) and k) make the appearance of the display more 'quiet'.
+j) added function disp_msg() to display informative/warning or error messages
+k) added a function disp_frame() which builds the static texts on the display
+l) in dt_handler() added functionality to update only the most frequently changed data: the time. The date and day-of-the-week will only updated when necessary.
+The measures in k) and l) make the appearance of the display more 'quiet'.
 ```
