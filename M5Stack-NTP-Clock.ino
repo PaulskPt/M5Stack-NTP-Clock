@@ -96,7 +96,7 @@ boolean lStart = true;
 boolean lStop = false;
 String TITLE =  "NTP Synchronized Clock";
 unsigned int colour = 0;
-int hori[] = {0, 80, 160, 240};
+int hori[] = { 0, 80, 156, 240};
 int vert[] = {40, 80, 120, 160, 200};
 unsigned long t_start = millis();
 
