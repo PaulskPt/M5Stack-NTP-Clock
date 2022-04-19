@@ -47,7 +47,8 @@ i) in dt_handler() added functionality for a 24 hour clock instead of 12 hour wi
 j) in dt_handler() added functionality to display the day-of-the-week (using the added global char array daysOfTheWeek[7][12])
 k) added function disp_msg() to display informative/warning or error messages
 l) added the blinking of the power led to indicate when date and/or time is read and displayed
-m) added a function disp_frame() which builds the static texts on the display
-n) in dt_handler() added functionality to update only the most frequently changed data: the time. The date and day-of-the-week will only updated when necessary.
-The measures in m) and n) make the appearance of the display more 'quiet'.
+m) added use of M5Stack Axp module to control built-in Power LED, display backlight and eventually the possibility to switch off the device.
+n) added a function disp_frame() which builds the static texts on the display
+o) in dt_handler() added functionality to update only the most frequently changed data: the time. The date and day-of-the-week will only updated when necessary.
+The measures in n) and o) make the appearance of the display more 'quiet'.
 ```
