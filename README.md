@@ -53,3 +53,5 @@ o) added a function disp_frame() which builds the static texts on the display
 p) in dt_handler() added functionality to update only the most frequently changed data: the time. The date and day-of-the-week will only updated when necessary.
 The measures in o) and p) make the appearance of the display more 'quiet'.
 ```
+
+This is a 'work-in-progress'. ToDo: optimize the function tz_nato().
