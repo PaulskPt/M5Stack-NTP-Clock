@@ -35,6 +35,8 @@ Added use of the three buttons of which, in this moment, only BtnA and BtnC are 
 BtnA to force a re-synchronizing of the built-in RTC from an NTP-server on the internet.
 BtnC to Exit the clock.
 
-Added functionality to read WiFi credentials from file ```secrets.h``` on SD card.
-Aded function ```rdDbgFlag()```to read ```DEBUG_FLAG``` from same file on SD card. This sets or clears the ```my_debug``` flag in the sketch. This flag is used to print/not print output to Monitor window of the Arduino IDE (or the M5Stack display).
+Added functionality to read the following data from file ```secrets.h``` on SD card, in case the flags ```SD_present``` and ```vars_fm_sd are``` true:
+a) WiFi credentials: ```SECRET_SSID``` and ```SECRET_PASS```;
+b) the status of the flag ```DEBUG_FLAG```
+The latter sets or clears the flag ```my_debug``` in the sketch. This flag is used to print/not print output to Monitor window of the Arduino IDE (or the M5Stack display).
 
