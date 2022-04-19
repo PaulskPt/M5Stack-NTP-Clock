@@ -3,22 +3,23 @@
  * The README.md says: You need this library tho so get installing: https://github.com/taranais/NTPClient
  * I already had an NTPClient library installed. I had to delete that one because it did not have the function: getFormattedDate()
  * Modifications in this fork:
- * a) moved date/time handling from loop() to dt_handler();
- * b) added functionality to retrieve WiFi credentials and DEBUG_FLAG from CD card, file: '/secrets.h'
- * c) set/clear global flag my_debug from retrieved DEBUG_FLAG
- * d) added functionality for button presses of BtnA, BtnB and BtnC. In this moment only BtnA and BtnC are in use.
- * e) added function to update date/time of built-in RTC from NTP server on internet. 
- * f) added functionality to use BtnA to force re-synchronization of the built-in RTC from a NTP server.
- * g) in loop() added a elapsed time calculation.
- * h) in loop() added a call to dt_handler() every 5 minutes with flag lRefresh true to force re-synchronization of the built-in RTC from a NTP server.
- * i) in dt_handler() added functionality for a 24 hour clock instead of 12 hour with am/pm
- * j) in dt_handler() added functionality to display the day-of-the-week (using the added global char array daysOfTheWeek[7][12])
- * k) added function disp_msg() to display informative/warning or error messages
- * l) added the blinking of the power led to indicate when date and/or time is read and displayed
- * m) added use of M5Stack Axp module to control built-in Power LED, display backlight and eventually the possibility to switch off the device.
- * n) added a function disp_frame() which builds the static texts on the display
- * o) in dt_handler() added functionality to update only the most frequently changed data: the time. The date and day-of-the-week will only updated when necessary.
- * The measures in n) and o) make the appearance of the display more 'quiet'.
+ * a) use of <M5Core2.h> instead of <M5Stack.h>
+ * b) moved date/time handling from loop() to dt_handler();
+ * c) added functionality to retrieve WiFi credentials and DEBUG_FLAG from CD card, file: '/secrets.h'
+ * d) set/clear global flag my_debug from retrieved DEBUG_FLAG
+ * e) added functionality for button presses of BtnA, BtnB and BtnC. In this moment only BtnA and BtnC are in use.
+ * f) added function to update date/time of built-in RTC from NTP server on internet. 
+ * g) added functionality to use BtnA to force re-synchronization of the built-in RTC from a NTP server.
+ * h) in loop() added a elapsed time calculation.
+ * i) in loop() added a call to dt_handler() every 5 minutes with flag lRefresh true to force re-synchronization of the built-in RTC from a NTP server.
+ * j) in dt_handler() added functionality for a 24 hour clock instead of 12 hour with am/pm
+ * k) in dt_handler() added functionality to display the day-of-the-week (using the added global char array daysOfTheWeek[7][12])
+ * l) added function disp_msg() to display informative/warning or error messages
+ * m) added the blinking of the power led to indicate when date and/or time is read and displayed
+ * n) added use of M5Stack Axp module to control built-in Power LED, display backlight and eventually the possibility to switch off the device.
+ * o) added a function disp_frame() which builds the static texts on the display
+ * p) in dt_handler() added functionality to update only the most frequently changed data: the time. The date and day-of-the-week will only updated when necessary.
+ * The measures in o) and p) make the appearance of the display more 'quiet'.
 */
 #include <Arduino.h>
 #include <WiFi.h>
