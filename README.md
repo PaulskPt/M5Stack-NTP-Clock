@@ -18,7 +18,7 @@ Parameter: a time-zone in the range "-12" ... "+12". This function returns a ```
 
 In NTPClient.cpp I modified the functions: ```getFormattedTime()``` and ```getFormattedDate()```.
 The function getFormattedDate can now be called with a 2nd parameter ```use_local_time```. This parameter defaults to ```false```.
-Example: getFormattedDate(0, false);
+Example: getFormattedDate(0, true);
 In that case the function will return the formattedDate with as last character the NATO time-zone letter. 
 Example: "2022-04-19T00:01:46A" (for the time-zone UTC + 1 hour) (= UTC + 3600 seconds)
 
