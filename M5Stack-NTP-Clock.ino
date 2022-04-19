@@ -18,7 +18,7 @@
  * m) added use of M5Stack Axp module to control built-in Power LED, display backlight and eventually the possibility to switch off the device.
  * n) added a function disp_frame() which builds the static texts on the display
  * o) in dt_handler() added functionality to update only the most frequently changed data: the time. The date and day-of-the-week will only updated when necessary.
- * The measures in m) and n) make the appearance of the display more 'quiet'.
+ * The measures in n) and o) make the appearance of the display more 'quiet'.
 */
 #include <Arduino.h>
 #include <WiFi.h>
