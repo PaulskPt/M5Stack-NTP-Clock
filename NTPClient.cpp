@@ -297,33 +297,33 @@ void NTPClient::setEpochTime(unsigned long secs) {
 * Param String: tz (range "-12" to "+12"). "0" will return "Z" (GMT/UTC)
 * Return String: NATO timezone letter
 */
-String NTPClient::tz_nato(String tz){
-    int le = tz.length();
-    if (le > 3)
-        return "?";
+String NTPClient::tz_nato(String tz)
+{
+  int le = tz.length();
+  if (le > 3)
+    return "?";
 
-    if (le == 1 || le == 2 || le == 3)
-    {
-        int n = tz.toInt();
-        if (n == 0)
-            return "Z";
-        else if (n < 0)
-        {   // Westerly timezones
-            n = abs(n);
-            if (n > 12)
-      n = 0;
+  if (le == 1 || le == 2 || le == 3)
+  {
+    int n = tz.toInt();
+    if (n == 0)
+      return "Z";
+    else if (n < 0)
+    {   // Westerly timezones
+      n = abs(n);
+      if (n > 12)
+        n = 0;
       return tz_west[n];
     } 
     else if (n > 0)
     {  // Easterly timezones
-          
-            if (n > 12)
+      if (n > 12)
         n = 0;
       return tz_east[n];
-        }
-        else
-            return tz_west[0];
     }
     else
-        return tz_west[0];
+      return tz_west[0];
+  }
+  else
+    return tz_west[0];
 }
