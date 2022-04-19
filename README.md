@@ -27,7 +27,7 @@ NTPClient timeClient(ntpUDP, NTP_ADDRESS, NTP_OFFSET, NTP_INTERVAL);
 In the ```M5Stack-NTP-Clock-master.ino``` sketch file:
 
 Moved the date and time handling from loop() to a new function ```dt_handler(boolean lRefr)```.
-Added flag ```use_12hr``` to add 24 hour clock functionality.
+Added 24 hour clock functionality.
 Added functionality to only update that part of the display that refreshes the most: the time.
 In loop() added an elapsed time calculation. 
 Added functionality to synchronize the built-in RTC with an NTP server every 5 minutes.
