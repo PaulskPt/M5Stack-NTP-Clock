@@ -35,9 +35,9 @@ NTPClient timeClient(ntpUDP, NTP_ADDRESS, NTP_OFFSET, NTP_INTERVAL);
 Modifications in this fork:
 
 ```
-a) moved date/time handling from ```loop()``` to dt_handler();
-b) added functionality to retrieve WiFi credentials and DEBUG_FLAG from CD card, file ```secrets.h```
-c) set/clear global flag ```my_debug``` from retrieved DEBUG_FLAG
+a) moved date/time handling from loop() to dt_handler();
+b) added functionality to retrieve WiFi credentials and DEBUG_FLAG from CD card, file: secrets.h
+c) set/clear global flag my_debug from retrieved DEBUG_FLAG
 d) added functionality for button presses of BtnA, BtnB and BtnC. In this moment only BtnA and BtnC are in use.
 e) added function to update date/time of built-in RTC from NTP server on internet. 
 f) added functionality to use BtnA to force re-synchronization of the built-in RTC from a NTP server.
