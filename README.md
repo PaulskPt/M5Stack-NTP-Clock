@@ -54,4 +54,4 @@ p) in dt_handler() added functionality to update only the most frequently change
 The measures in o) and p) make the appearance of the display more 'quiet'.
 ```
 
-This is a 'work-in-progress'. ToDo: optimize the function tz_nato().
+This is a 'work-in-progress'.
