@@ -30,6 +30,7 @@
 #include <M5Core2.h>
 
 boolean my_debug = NULL;
+boolean local_time = NULL;
 
 FILE myFile;
 
@@ -43,17 +44,19 @@ FILE myFile;
 
 #ifdef USE_PSK_SECRETS
 ///////please enter your sensitive data in the Secret tab/arduino_secrets.h
-char ssid[]           = SECRET_SSID;     // Network SSID (name)
-char password[]       = SECRET_PASS;     // Network password (use for WPA, or use as key for WEP)
-char debug_flag[]     = DEBUG_FLAG;      // General debug print flag
-char ntp_local_flag[] = NTP_LOCAL_FLAG;  // Defines to use local NTP server or world pool server
-char ntp_local_url[]  = NTP_LOCAL_URL;    // URL of local NTP server pool
+char ssid[]            = SECRET_SSID;     // Network SSID (name)
+char password[]        = SECRET_PASS;     // Network password (use for WPA, or use as key for WEP)
+char debug_flag[]      = DEBUG_FLAG;      // General debug print flag
+char local_time_flag[] = LOCAL_TIME_FLAG; // Defines local_time if true, else gmt
+char ntp_local_flag[]  = NTP_LOCAL_FLAG;  // Defines to use local NTP server or world pool server
+char ntp_local_url[]   = NTP_LOCAL_URL;    // URL of local NTP server pool
 #else
-char ssid[]           = "SSID";         // your network SSID (name)
-char password[]       = "password"; // your network password
-char debug_flag[]     = "0";
-char ntp_local_flag[] = "0";
-char ntp_local_url[]  = "pt.pool.ntp.org";
+char ssid[]            = "SSID";         // your network SSID (name)
+char password[]        = "password"; // your network password
+char debug_flag[]      = "0";
+char local_time_flag[] = "0";
+char ntp_local_flag[]  = "0";
+char ntp_local_url[]   = "pt.pool.ntp.org";
 #endif
 
 boolean ntp_local = false; // default use worldwide ntp pool
@@ -130,8 +133,10 @@ void setup(void)
     SD_present = true;
     Serial.println(F("initialization done."));
   }
+
   if (SD_present && vars_fm_sd)
   {
+     Serial.println("SD card present.\nGoing to read variables.");
      // Read WiFi credentials from SD Card
      if (rdSecrets(SD,"/secrets.h"))
      {
@@ -144,12 +149,36 @@ void setup(void)
        Serial.print("None or some values read from file \"");
        Serial.println("/secrets.h");
      }
-     Serial.print("Value of ntp_local flag = ");
-     Serial.println(ntp_local == 1 ? "true" : "false");
-     Serial.print("Value of my_debug flag = ");
-     Serial.println(my_debug == 1 ? "true" : "false");
-  }
 
+  }
+  else
+  {
+    Serial.println("No SD card.\nWe use variables from built-in secrets.h");
+    if (debug_flag[0])
+      my_debug = true;
+    else
+      my_debug = false;
+
+    if (local_time_flag[0])
+      local_time = true;
+    else
+      local_time = false;
+
+    if (ntp_local_flag[0])
+      ntp_local = true;
+    else
+      ntp_local = false;
+  }
+  
+  Serial.print("Value of my_debug flag = ");
+  Serial.println(my_debug == 1 ? "true" : "false");
+  Serial.print("Value of local time_flag = ");
+  Serial.println(local_time == 1 ? "true" : "false");
+  Serial.print("Value of ntp_local flag = ");
+  Serial.println(ntp_local == 1 ? "true" : "false");
+    
+  Serial.print("ntp_local_url = ");
+  Serial.println(ntp_local_url);
   
   if (ntp_local)
   {
@@ -258,7 +287,7 @@ boolean rdSecrets(fs::FS &fs, const char * path)
   int fnd = 0;
   boolean lFnd, txt_shown = false;
 
-  const char item_lst[][15] = {"SECRET_SSID", "SECRET_PASS", "DEBUG_FLAG", "NTP_LOCAL_FLAG", "NTP_LOCAL_URL"};
+  const char item_lst[][16] = {"SECRET_SSID", "SECRET_PASS", "DEBUG_FLAG", "LOCAL_TIME_FLAG", "NTP_LOCAL_FLAG", "NTP_LOCAL_URL"};
   le = sizeof(item_lst)/sizeof(item_lst[0]);
   
   Serial.printf("%s\n", s);
@@ -321,6 +350,16 @@ boolean rdSecrets(fs::FS &fs, const char * path)
                 }
                 else if (i == 3)
                 {
+                  s2.toCharArray(local_time_flag,s2.length()-1);
+                  Serial.print("extracted local time flag ");
+                  Serial.println(local_time_flag[0]);
+                  if (local_time_flag[0])
+                    local_time = true;
+                  else
+                    local_time = false;
+                }
+                else if (i == 4)
+                {
                   s2.toCharArray(ntp_local_flag,s2.length()-1);
                   Serial.print("extracted ntp_local_flag: ");
                   Serial.println(ntp_local_flag[0]);
@@ -329,7 +368,7 @@ boolean rdSecrets(fs::FS &fs, const char * path)
                   else
                     ntp_local = false;
                 }
-                else if (i == 4)
+                else if (i == 5)
                 {
                   s2.toCharArray(ntp_local_url,s2.length()-1);
                   Serial.print("extracted ntp_local_url: ");
@@ -417,7 +456,7 @@ void dt_handler(boolean lRefr)
     String wd, yearStampSmall, timeStamp, hourStamp, minuteStamp, secondStamp = "";
     String hrs,mins,secs = "";
     String tz_ltr = "?";
-    boolean use_local_time = ntp_local; // This is temporary. There should be a separate variable in secrets.h to indicate use of local time or GMT
+    boolean use_local_time = local_time_flag;
 
     if (lRefr)  // Refresh (from NTP Server)
     {
