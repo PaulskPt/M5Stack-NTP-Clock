@@ -8,10 +8,10 @@ You need this library tho so get installing: https://github.com/taranais/NTPClie
 
 ```Notes @PaulskPt:```
 
-This branch contains a modified version of my forked version of ```NTP_Clock.ino```. 
+This branch contains a modified version of my forked version of ```M5Stack-NTP-Clock.ino```. 
 For this reason a new filename: ```NTP_Clock_w_sleep.ino```.
 
-This sketch is for the most part the same as the NTP_Clock.ino, except for the following:
+This sketch is for the most part the same as the M5Stack-NTP-Clock.ino, except for the following:
 
 a) only BtnA has a function: to re-synchronize the built-in RTC with the datetime stamp of a NTP Server on internet.
 BtnB and BtnC have no function.
