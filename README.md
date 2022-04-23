@@ -38,7 +38,7 @@ Modifications in this fork:
 a) use of <M5Core2.h> instead of <M5Stack.h>
 b) moved date/time handling from loop() to dt_handler();
 c) added functionality to retrieve WiFi SECRET_SSID, SECRET_PASSWORD, DEBUG_FLAG, LOCAL_TIME_FLAG, NTP_LOCAL_FLAG, NTP_LOCAL_URL from SD card, file: '/secrets.h'
-d) added flag ```show_wifi_creds``` to show or hide the WiFi credentials when retrieving this data from the file on SD card.
+d) added flag 'show_wifi_creds' to show or hide the WiFi credentials when retrieving this data from the file on SD card.
 e) set/clear global flags: my_debug, local_time and ntp_local from retrieved flags
 f) added functionality for button presses of BtnA, BtnB and BtnC. In this moment only BtnA and BtnC are in use.
 g) added function to update date/time of built-in RTC from NTP server on internet. 
