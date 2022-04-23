@@ -85,6 +85,7 @@ boolean btnA_state = false;
 boolean btnB_state = false;
 boolean btnC_state = false;
 boolean lRefresh = false;
+boolean show_wifi_creds = false;
 
 #define NTP_OFFSET  +3600              // for Europe/Lisbon       was: -28798 // In seconds for los angeles/san francisco time zone
 #define NTP_INTERVAL 60 * 1000         // In miliseconds
@@ -337,13 +338,19 @@ boolean rdSecrets(fs::FS &fs, const char * path)
                 {
                   s2.toCharArray(ssid,s2.length()-1);
                   Serial.print("extracted ssid: ");
-                  Serial.println(ssid);
+                  if (show_wifi_creds)
+                    Serial.println(ssid);
+                  else
+                    Serial.println("<secret ssid>")
                 }
                 else if (i == 1)
                 {
                   s2.toCharArray(password,s2.length()-1);
                   Serial.print("extracted password ");
-                  Serial.println(password);
+                  if (show_wifi_creds)
+                    Serial.println(password);
+                  else 
+                    Serial.println("<secret password>")
                 }
                 else if (i == 2)
                 {
