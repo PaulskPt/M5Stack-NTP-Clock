@@ -13,7 +13,8 @@ const byte numChars = 2;
 const char tz_west[13][numChars] = {"?", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y"};
 const char tz_east[13][numChars] = {"?", "A", "B", "C", "D", "E", "F", "G", "H", "I", "K", "L", "M"};
 
-class NTPClient {
+class NTPClient 
+{
   private:
     UDP*          _udp;
     bool          _udpSetup       = false;

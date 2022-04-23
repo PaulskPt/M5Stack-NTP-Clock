@@ -1,4 +1,4 @@
-/**
+/*
  * The MIT License (MIT)
  * Copyright (c) 2015 by Fabrice Weinberg
  *
@@ -18,37 +18,47 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
 #include "NTPClient.h"
 
-NTPClient::NTPClient(UDP& udp) {
+/* Added by @PaulskPt 2022-04-23 for testing purposes */
+#ifndef DEBUG_NTPClient
+  #define DEBUG_NTPClient  (1)
+#endif
+
+NTPClient::NTPClient(UDP& udp) 
+{
   this->_udp            = &udp;
 }
 
-NTPClient::NTPClient(UDP& udp, int timeOffset) {
+NTPClient::NTPClient(UDP& udp, int timeOffset) 
+{
   this->_udp            = &udp;
   this->_timeOffset     = timeOffset;
 }
 
-NTPClient::NTPClient(UDP& udp, const char* poolServerName) {
+NTPClient::NTPClient(UDP& udp, const char* poolServerName) 
+{
   this->_udp            = &udp;
   this->_poolServerName = poolServerName;
 }
 
-NTPClient::NTPClient(UDP& udp, const char* poolServerName, int timeOffset) {
+NTPClient::NTPClient(UDP& udp, const char* poolServerName, int timeOffset) 
+{
   this->_udp            = &udp;
   this->_timeOffset     = timeOffset;
   this->_poolServerName = poolServerName;
 }
 
-NTPClient::NTPClient(UDP& udp, const char* poolServerName, int timeOffset, unsigned long updateInterval) {
+NTPClient::NTPClient(UDP& udp, const char* poolServerName, int timeOffset, unsigned long updateInterval) 
+{
   this->_udp            = &udp;
   this->_timeOffset     = timeOffset;
   this->_poolServerName = poolServerName;
   this->_updateInterval = updateInterval;
 }
 
-void NTPClient::begin() {
+void NTPClient::begin() 
+{
   this->begin(NTP_DEFAULT_LOCAL_PORT);
 }
 
@@ -67,8 +77,10 @@ void NTPClient::chg_url(const char* newPoolServerName)
   if (le > 0)
   {
     this->_poolServerName = newPoolServerName;
-    Serial.print("this->_poolServerName set to: ");
-    Serial.println(this->_poolServerName);
+    #ifdef DEBUG_NTPClient
+      Serial.print("this->_poolServerName set to: ");
+      Serial.println(this->_poolServerName);
+    #endif
   }
 }
 
@@ -88,7 +100,7 @@ bool NTPClient::isValid(byte * ntpPacket)
     if((ntpPacket[1] < 1) || (ntpPacket[1] > 15))        //Check for valid Stratum
         return false;
 
-    if(    ntpPacket[16] == 0 && ntpPacket[17] == 0 && 
+    if( ntpPacket[16] == 0 && ntpPacket[17] == 0 && 
         ntpPacket[18] == 0 && ntpPacket[19] == 0 &&
         ntpPacket[20] == 0 && ntpPacket[21] == 0 &&
         ntpPacket[22] == 0 && ntpPacket[22] == 0)        //Check for ReferenceTimestamp != 0
@@ -97,7 +109,8 @@ bool NTPClient::isValid(byte * ntpPacket)
     return true;
 }
 
-bool NTPClient::forceUpdate() {
+bool NTPClient::forceUpdate() 
+{
   #ifdef DEBUG_NTPClient
     Serial.println("Update from NTP Server");
   #endif
@@ -109,7 +122,8 @@ bool NTPClient::forceUpdate() {
   // Wait till data is there or timeout...
   byte timeout = 0;
   int cb = 0;
-  do {
+  do 
+  {
     delay ( 10 );
     cb = this->_udp->parsePacket();
     
@@ -137,51 +151,79 @@ bool NTPClient::forceUpdate() {
   return true;
 }
 
-bool NTPClient::update() {
+bool NTPClient::update()
+{
   if ((millis() - this->_lastUpdate >= this->_updateInterval)     // Update after _updateInterval
-    || this->_lastUpdate == 0) {                                // Update if there was no update yet.
-    if (!this->_udpSetup) this->begin();                         // setup the UDP client if needed
+    || this->_lastUpdate == 0) 
+  {                           // Update if there was no update yet.
+    if (!this->_udpSetup) 
+      this->begin();          // setup the UDP client if needed
     return this->forceUpdate();
   }
   return true;
 }
 
-unsigned long NTPClient::getEpochTime() {
+unsigned long NTPClient::getEpochTime()
+{
   return this->_timeOffset + // User offset
          this->_currentEpoc + // Epoc returned by the NTP server
          ((millis() - this->_lastUpdate) / 1000); // Time since last update
 }
 
-int NTPClient::getDay() {
+int NTPClient::getDay() 
+{
   return (((this->getEpochTime()  / 86400L) + 4 ) % 7); //0 is Sunday
 }
-int NTPClient::getHours() {
+int NTPClient::getHours()
+{
   return ((this->getEpochTime()  % 86400L) / 3600);
 }
-int NTPClient::getMinutes() {
+int NTPClient::getMinutes()
+{
   return ((this->getEpochTime() % 3600) / 60);
 }
-int NTPClient::getSeconds() {
+int NTPClient::getSeconds()
+{
   return (this->getEpochTime() % 60);
 }
 
 // 2022-04-18 Mod by @PaulskPt
 // was: String NTPClient::getFormattedTime(unsigned long secs) {
-String NTPClient::getFormattedTime(unsigned long secs, boolean use_local_time) {
+String NTPClient::getFormattedTime(unsigned long secs, boolean use_local_time)
+{
+
   unsigned long rawTime = secs ? secs : this->getEpochTime();
 
+  #ifdef DEBUG_NTPClient
+    char TAG[] = "NTPClient.getFormattedTime(): ";
+  #endif
+
   if (use_local_time) 
-    Serial.println("getFormattedTime(): we will use local time");
+  {
+    #ifdef DEBUG_NTPClient
+      Serial.print(TAG);
+  	  Serial.println("we will use local time");
+    #endif
+  }
   else
   { // We will use GMT
+    #ifdef DEBUG_NTPClient
+      Serial.print(TAG);
+  	  Serial.println("we will use GMT time");
+    #endif
+
     if (rawTime)
     {
-      Serial.print("getFormttedTime() rawTime = ");
+      Serial.print(TAG);
+	  Serial.print("rawTime = ");
       Serial.println(rawTime);
       if (this->_timeOffset > 0)
       {
-        Serial.print("getFormattedTime() correcting rawTime. Subtracting timeOffset: ");
-        Serial.println(this->_timeOffset);
+        #ifdef DEBUG_NTPClient
+  		    Serial.print(TAG);
+          Serial.print("correcting rawTime. Subtracting timeOffset: ");
+          Serial.println(this->_timeOffset);
+        #endif
         rawTime -= this->_timeOffset;  // e.g.: Lisbon DST is UTC + 3600 (1 hr), so we have to subtract to get UTC
       }
       else if (this->_timeOffset < 0)
@@ -206,21 +248,33 @@ String NTPClient::getFormattedTime(unsigned long secs, boolean use_local_time) {
 // Based on https://github.com/PaulStoffregen/Time/blob/master/Time.cpp
 // currently assumes UTC timezone, instead of using this->_timeOffset
 // was: String NTPClient::getFormattedDate(unsigned long secs) {
-String NTPClient::getFormattedDate(unsigned long secs, boolean use_local_time) {
+String NTPClient::getFormattedDate(unsigned long secs, boolean use_local_time) 
+{
+  #ifdef DEBUG_NTPClient
+    char TAG[] = "NTPClient.getFormattedDate(): ";
+  #endif
   unsigned long rawTime = (secs ? secs : this->getEpochTime()) / 86400L;  // in days
   unsigned long days = 0, year = 1970;
   uint8_t month;
   static const uint8_t monthDays[]={31,28,31,30,31,30,31,31,30,31,30,31};
-
+  #ifdef DEBUG_NTPClient
+    Serial.print(TAG);
+    Serial.print("rawTime (in days) = ");
+    Serial.println(rawTime);
+  #endif
   while((days += (LEAP_YEAR(year) ? 366 : 365)) <= rawTime)
     year++;
   rawTime -= days - (LEAP_YEAR(year) ? 366 : 365); // now it is days in this year, starting at 0
   days=0;
-  for (month=0; month<12; month++) {
+  for (month=0; month<12; month++)
+  {
     uint8_t monthLength;
-    if (month==1) { // february
+    if (month==1)  // february
+    {
       monthLength = LEAP_YEAR(year) ? 29 : 28;
-    } else {
+    } 
+    else
+    {
       monthLength = monthDays[month];
     }
     if (rawTime < monthLength) break;
@@ -235,8 +289,11 @@ String NTPClient::getFormattedDate(unsigned long secs, boolean use_local_time) {
     Serial.println(secs);
     if (this->_timeOffset > 0)
     {
-        Serial.println("getFormattedDate() correcting rawTime. Subtracting timeOffset");
-        secs -= this->_timeOffset;  // e.g.: Lisbon DST is UTC + 3600 (1 hr), so we have to subtract to get UTC
+      #ifdef DEBUG_NTPClient
+    		Serial.print(TAG);
+        Serial.println("correcting rawTime. Subtracting timeOffset");
+      #endif
+      secs -= this->_timeOffset;  // e.g.: Lisbon DST is UTC + 3600 (1 hr), so we have to subtract to get UTC
     }
     else if (this->_timeOffset < 0)
         secs += this->_timeOffset;  // e.g.: Louisville, USA DTS is UTC - 4 hrs = - 4*3600 = 14400 secs, so we have to add 14400.
