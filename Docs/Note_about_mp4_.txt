@@ -1,0 +1,5 @@
+Note about the M5Stack_NTP_Clock.mp4
+
+When playing the video it looks like that the Power LED of the Core2 device
+is interrupting is blink sequence at intervals but this is (to me) a side-effect of the video recording fps.
+The LED is blinking at the rate of the seconds update.
