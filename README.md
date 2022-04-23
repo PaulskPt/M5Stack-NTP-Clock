@@ -9,7 +9,7 @@ You need this library tho so get installing: https://github.com/taranais/NTPClie
 ```Notes @PaulskPt:```
 
 This branch contains a modified version of my forked version of ```M5Stack-NTP-Clock.ino```. 
-For this reason a new filename: ```NTP_Clock_w_sleep.ino```.
+For this reason a new filename: ```M5Stack_NTP_Clock_w_sleep.ino```.
 
 This sketch is for the most part the same as the M5Stack-NTP-Clock.ino, except for the following:
 
