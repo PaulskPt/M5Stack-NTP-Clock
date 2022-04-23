@@ -1,0 +1,91 @@
+Wednesday 2022-04-20 10h29 PT
+
+Arduino IDE v1.8.19 on PC with O.S.: MS Windows 11 Pro
+
+
+Platform: M5Stack MCore2
+Running (Arduino built) sketch: M5Stack-NTP-Clock
+
+
+IDE Monitor output:
+
+ets Jul 29 2019 12:21:46
+
+rst:0x1 (POWERON_RESET),boot:0x17 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:1
+load:0x3fff0030,len:1184
+load:0x40078000,len:12804
+ho 0 tail 12 room 4
+load:0x40080400,len:3032
+entry 0x400805e4
+
+NTP Synchronized Clock
+Initializing SD card...initialization done.
+SD card present.
+Going to read variables.
+⸮⸮⸮?
+rdSecrets(): nr of items to retrieve: 6
+searching string: SECRET_SSID
+extracted ssid: <WiFi ssid from SD card>
+searching string: SECRET_PASS
+extracted password <WiFi password from SD card>
+searching string: DEBUG_FLAG
+extracted debug_flag: 0
+searching string: LOCAL_TIME_FLAG
+extracted local time flag 1
+searching string: NTP_LOCAL_FLAG
+extracted ntp_local_flag: 1
+searching string: NTP_LOCAL_URL
+extracted ntp_local_url: pt.pool.ntp.org
+All needed values successfully read from file "/secrets.h"
+Value of my_debug flag = true
+Value of local time_flag = true
+Value of ntp_local flag = true
+ntp_local_url = pt.pool.ntp.org
+for NTPClient we will use url: pt.pool.ntp.org
+this->_poolServerName set to: pt.pool.ntp.org
+M5Core2 initializing...axp: vbus limit off
+axp: gpio1 init
+axp: gpio2 init
+axp: rtc battery charging enabled
+axp: esp32 power voltage was set to 3.35v
+axp: lcd backlight voltage was set to 2.80v
+axp: lcd logic and sdcard voltage preset to 3.3v
+axp: vibrator voltage preset to 2v
+E (2420) ledc: ledc_channel_config(369): gpio_num argument is invalid
+touch: FT6336 ready (fw id 0x10 rel 1, lib 0x300E)
+OK
+
+
+Connecting to <WiFi_AP>
+.....
+WiFi connected.
+IP address: <Local IP address>
+
+NATO time-zone's test
+offset = -10, NATO time-zone = W
+offset = 0, NATO time-zone = Z
+offset = +12, NATO time-zone = M
+offset = -14, NATO time-zone = ?
+End-of-test
+dateStampConstructed: 22-04-20
+timeStampNoMilitary:  10:29:29
+
+dateStampConstructed: 22-04-20
+timeStampNoMilitary:  10:29:30
+
+dateStampConstructed: 22-04-20
+timeStampNoMilitary:  10:29:31
+
+Button A was pressed.
+Refresh RTC from NTP
+getFormattedTime(): we will use local time
+DateTime sync from NTP server: 2022-04-20T10:29:37A
+
+dateStampConstructed: 22-04-20
+timeStampNoMilitary:  10:29:37
+
+dateStampConstructed: 22-04-20
+timeStampNoMilitary:  10:29:37
