@@ -87,7 +87,7 @@ boolean btnC_state = false;
 boolean tb_state = false;
 boolean disp_state = true;  // We start with the display ON
 boolean lRefresh = false;
-
+boolean lbat_state = false;
 #define NTP_OFFSET  +3600              // for Europe/Lisbon       was: -28798 // In seconds for los angeles/san francisco time zone
 #define NTP_INTERVAL 60 * 1000         // In miliseconds
 #define NTP_ADDRESS  "pool.ntp.org"
@@ -680,6 +680,22 @@ void dt_handler(boolean lRefr)
       M5.Axp.SetLed(true);
 }
 
+void batState()
+{
+  M5.Lcd.fillScreen(BLACK);
+  M5.Lcd.setCursor(76, vert[0]-10);
+  M5.Lcd.print("Battery Status");
+  M5.Lcd.setCursor(0, vert[1]);
+  M5.Lcd.print("Voltage:");
+  M5.Lcd.setCursor(hori[2], vert[1]);
+  M5.Lcd.printf("%4.2f V", M5.Axp.GetBatVoltage());
+  M5.Lcd.setCursor(0, vert[2]);
+  M5.Lcd.print("Charging?:");
+  M5.Lcd.setCursor(hori[2], vert[2]);
+  M5.Lcd.print(M5.Axp.isCharging() ? "Yes": "No");
+  delay(5000);
+}
+
 void buttonA_wasPressed()
 {
     btnA_state = true;
@@ -691,8 +707,9 @@ void buttonA_wasPressed()
 void buttonB_wasPressed()
 {
     btnB_state = true;
+    lbat_state = true;
     disp_msg("Button B was pressed.", 1);
-    disp_msg("not implemented yet", 2);
+    disp_msg("battery Status", 2);  // was: ("not implemented yet", 2);
 } 
   
 void buttonC_wasPressed()
@@ -758,6 +775,10 @@ void loop()
    
     t_current = millis();
     t_elapsed = t_current - t_start;
+
+    if (lbat_state)
+      batState();
+      lbat_state = false;
 
     if (tb_state || btnA_state || btnB_state || btnC_state)
     {
