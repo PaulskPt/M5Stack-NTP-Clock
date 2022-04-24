@@ -13,12 +13,15 @@ For this reason a new filename: ```M5Stack_NTP_Clock_w_sleep.ino```.
 
 This sketch is for the most part the same as the M5Stack-NTP-Clock.ino, except for the following:
 
-a) only BtnA has a function: to re-synchronize the built-in RTC with the datetime stamp of a NTP Server on internet.
+Button functions:
+
+a) BtnA: re-synchronize the built-in RTC with the datetime stamp of a NTP Server on internet.
 BtnB and BtnC have no function.
+b) BtnB: battery status page.
 
 ```Addition:```
 
-b) the whole display is defined as touch area. Now you can touch the display. If it is ON, it will switch OFF.
+The whole display is defined as touch area. Now you can touch the display. If it is ON, it will switch OFF.
 Also the Power LED (that blinks in the rithm of the seconds updates) will switch off. The clock however
 continues to be updated.
 If the display is OFF it will switch ON upon touching the display.
