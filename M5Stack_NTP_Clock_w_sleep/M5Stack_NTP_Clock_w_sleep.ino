@@ -17,11 +17,12 @@
  * l) in dt_handler() added functionality to display the day-of-the-week (using the added global char array daysOfTheWeek[7][12]) 
  * m) added function disp_msg() to display informative/warning or error messages
  * n) added function batState() to display battery status information
- * o) added the blinking of the power led to indicate when date and/or time is read and displayed
- * p) added use of M5Stack Axp module to control built-in Power LED, display backlight and eventually the possibility to switch off the device.
- * q) added a function disp_frame() which builds the static texts on the display
- * r) in dt_handler() added functionality to update only the most frequently changed data: the time. The date and day-of-the-week will only updated when necessary.
- * The measures in q) and r) make the appearance of the display more 'quiet'.
+ * o) added function dispTemp() to display the temperature of the AXP192 chip
+ * p) added the blinking of the power led to indicate when date and/or time is read and displayed
+ * q) added use of M5Stack Axp module to control built-in Power LED, display backlight and eventually the possibility to switch off the device.
+ * r) added a function disp_frame() which builds the static texts on the display
+ * s) in dt_handler() added functionality to update only the most frequently changed data: the time. The date and day-of-the-week will only updated when necessary.
+ * The measures in r) and s) make the appearance of the display more 'quiet'.
 */
 #include <Arduino.h>
 #include <WiFi.h>
@@ -89,7 +90,9 @@ boolean btnC_state = false;
 boolean tb_state = false;
 boolean disp_state = true;  // We start with the display ON
 boolean lRefresh = false;
-boolean lbat_state = false;
+boolean bat_state = false;
+boolean led_state = false;
+boolean temp_state = false; 
 #define NTP_OFFSET  +3600              // for Europe/Lisbon       was: -28798 // In seconds for los angeles/san francisco time zone
 #define NTP_INTERVAL 60 * 1000         // In miliseconds
 #define NTP_ADDRESS  "pool.ntp.org"
@@ -256,8 +259,11 @@ void setup(void)
 
   M5.Axp.SetLDO2(true); 
   M5.Axp.SetDCDC3(true);  // Turn LCD backlight on
-  M5.Axp.SetLed(true);
-  
+  if (disp_state)
+  {
+    M5.Axp.SetLed(false);
+    toggleLED();  // trick to switch the Power LED on (starting with setting the flag false)
+  }
   M5.Lcd.clear();
   M5.Lcd.setTextSize(2);
   M5.Lcd.setTextColor(YELLOW);
@@ -626,7 +632,9 @@ void dt_handler(boolean lRefr)
     M5.Lcd.setTextSize(3);
     //M5.Lcd.fillScreen(BLACK);
     if (disp_state)
-      M5.Axp.SetLed(false);
+    {
+      toggleLED();
+    }
     
     if (use_12hr)
     {
@@ -679,46 +687,82 @@ void dt_handler(boolean lRefr)
     }
     delay(950);
     if (disp_state)  // Switch LED on only if disp_state is 'awake'
-      M5.Axp.SetLed(true);
+    {
+      toggleLED();
+    }
+}
+
+void toggleLED()
+{
+  led_state = !led_state;  // toggle state
+  M5.Axp.SetLed(led_state);
 }
 
 void batState()
 {
-  M5.Lcd.fillScreen(BLACK);
-  M5.Lcd.setCursor(76, vert[0]-10);
-  M5.Lcd.print("Battery Status");
-  M5.Lcd.setCursor(0, vert[1]);
-  M5.Lcd.print("Voltage:");
-  M5.Lcd.setCursor(hori[2], vert[1]);
-  M5.Lcd.printf("%4.2f V", M5.Axp.GetBatVoltage());
-  M5.Lcd.setCursor(0, vert[2]);
-  M5.Lcd.print("Charging?:");
-  M5.Lcd.setCursor(hori[2], vert[2]);
-  M5.Lcd.print(M5.Axp.isCharging() ? "Yes": "No");
-  delay(5000);
+  if (disp_state) // display only if display is awake
+  {
+    M5.Lcd.fillScreen(BLACK);
+    M5.Lcd.setCursor(76, vert[0]-10);
+    M5.Lcd.print("Battery Status");
+    M5.Lcd.setCursor(0, vert[1]);
+    M5.Lcd.print("Voltage:");
+    M5.Lcd.setCursor(hori[2], vert[1]);
+    M5.Lcd.printf("%4.2f V", M5.Axp.GetBatVoltage());
+    M5.Lcd.setCursor(0, vert[2]);
+    M5.Lcd.print("Charging?:");
+    M5.Lcd.setCursor(hori[2], vert[2]);
+    M5.Lcd.print(M5.Axp.isCharging() ? "Yes": "No");
+    delay(5000);
+  }
+}
+
+void dispTemp()
+{
+  if (disp_state) // display only if display is awake
+  {
+    M5.Lcd.fillScreen(BLACK);
+    M5.Lcd.setCursor(22, vert[0]-10);
+    M5.Lcd.print("AXP192 Chip temperature");
+    M5.Lcd.setCursor(0, vert[1]);
+    M5.Lcd.print("Temp:");
+    M5.Lcd.setCursor(hori[2], vert[1]);
+    M5.Lcd.printf("%5.2f Celsius", M5.Axp.GetTempInAXP192());  
+    delay(5000);
+  }
 }
 
 void buttonA_wasPressed()
 {
-    btnA_state = true;
-    disp_msg("Button A was pressed.", 1);
-    disp_msg("Refresh RTC from NTP", 2);
-    lRefresh = true;
+    if (disp_state) // handle btn press only if display is awake
+    {
+      btnA_state = true;
+      disp_msg("Button A was pressed.", 1);
+      disp_msg("Refresh RTC from NTP", 2);
+      lRefresh = true;
+    }
  } 
   
 void buttonB_wasPressed()
 {
-    btnB_state = true;
-    lbat_state = true;
-    disp_msg("Button B was pressed.", 1);
-    disp_msg("battery Status", 2);  // was: ("not implemented yet", 2);
+    if (disp_state) // handle btn press only if display is awake
+    {
+      btnB_state = true;
+      bat_state = true;
+      disp_msg("Button B was pressed.", 1);
+      disp_msg("battery Status", 2);  // was: ("not implemented yet", 2);
+    }
 } 
   
 void buttonC_wasPressed()
 {
-    btnC_state = true;
-    disp_msg("Button C was pressed.", 1);
-    disp_msg("not implemented yet", 2);
+    if (disp_state) // handle btn press only if display is awake
+    {
+      btnC_state = true;
+      temp_state = true;
+      disp_msg("Button C was pressed.", 1);
+      disp_msg("AXP192 Chip Temp", 2);
+    }
 }
 
 void switch_disp()
@@ -730,6 +774,7 @@ void switch_disp()
       disp_msg("Going to sleep...", 1);
       Serial.println();  // make a line of space
       M5.Axp.SetLed(false);
+      led_state = false;
       M5.Axp.SetDCDC3(false);  // Turn LCD backlight off
     }
     else
@@ -740,9 +785,13 @@ void switch_disp()
       disp_msg("Waking up...", 1);
       Serial.println();
       //M5.Axp.SetLDO2(true); 
-      M5.Axp.SetLed(true);
+      if (!led_state)
+      {
+        M5.Axp.SetLed(true); // If the Power LED was off switch it ON
+        led_state = true;
+      }
       delay(1000);
-      M5.Axp.SetLed(false);
+      //M5.Axp.SetLed(false);
     }
   }
 }
@@ -756,17 +805,19 @@ void loop()
 
   while (true)
   {
-
     M5.update(); // Read the status of the touch and the buttons
     tp_pos = M5.Touch.getPressPoint(); // determine if display has been touched
+
     if (tp_pos.x > -1 && tp_pos.y > -1)
     {
       tb_state = true;
       Serial.print("Display touched at touchpoint (x,y)");
       Serial.println(tp_pos);
       if (Btn0.inHotZone(tp_pos))
+      {
         switch_disp();
         disp_state = !disp_state;  // flip display state
+      }
     }
     if(M5.BtnA.wasPressed())
       buttonA_wasPressed();
@@ -778,9 +829,18 @@ void loop()
     t_current = millis();
     t_elapsed = t_current - t_start;
 
-    if (lbat_state)
+    if (bat_state)
+    {
       batState();
-      lbat_state = false;
+      bat_state = false;
+    }
+
+    if (temp_state)
+    {
+      dispTemp();
+      temp_state = false;
+    }
+    
 
     if (tb_state || btnA_state || btnB_state || btnC_state)
     {
