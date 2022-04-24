@@ -21,6 +21,7 @@ b) BtnB: battery status page.
 c) BtnC: AXP192 temperature. 
 
 
+
 ```Addition:```
 
 The whole display is defined as touch area. Now you can touch the display. If it is ON, it will switch OFF.
