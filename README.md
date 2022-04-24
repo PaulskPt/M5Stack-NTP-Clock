@@ -17,7 +17,9 @@ Button functions:
 
 a) BtnA: re-synchronize the built-in RTC with the datetime stamp of a NTP Server on internet.
 BtnB and BtnC have no function.
+
 b) BtnB: battery status page.
+
 c) BtnC: AXP192 temperature. 
 
 
